@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style type="text/css">
+			.nav{
+				width: 500px;
+				height: 500px;
+				border: solid 1px black;
+				/*position: relative;*/
+				display: flex;
+				justify-content: space-around;
+				/*justify-content:space-between;
+				align-items:space-between;*/
+				
+			}
+			
+			#box{
+				width: 100px;
+				/*position: absolute;*/
+				border: solid 1px black;
+				
+				
+			}
+			.al,.odiv{
+				display: inline-block;
+				width: 99px;
+				/*height: 100px;*/
+				border: solid 1px black;
+				text-align: center;
+				
+			}
+			.odiv{
+				width: 99px;
+				
+				
+			}
+			.bian{
+				background: #8A2BE2;
+			}
+			
+		</style>
+	</head>
+	<body>
+		<input type="text"  class="content"/><br />
+		<button>提交</button>
+		<div class="nav">
+			<div id="box">
+			</div>	
+		</div>
+	</body>
+	<script src="jquery-1.11.1.min.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript">
+		$("button").eq(0).click(function(){
+			let   content=$("input").val();
+			let time=new Date().getTime();
+			$.ajax({
+				type:"post",
+				url:"http://localhost:8080/add",
+				data:{
+					content,
+					time:time,
+					color:0
+				},
+				success(res){
+					getMsg()
+				}
+			});
+		})
+		getMsg()
+		function getMsg(){
+			$.ajax({
+				type:"get",
+				url:"http://localhost:8080/msg",
+			    success(res){
+			    	let str="";
+			    	
+			    	for(var i=0;i<res.length;i++){
+			    		
+			    	str+=`
+			   <a href="#" class="al" onclick=del("${res[i]._id}")>删除</a>
+			            <p class="al">${res[i].content}</p>
+			           ` 
+			          if(res[i].color==0)  {
+			          	  str+=`  
+			           <button class="odiv" _id='${res[i]._id}' >√</button>
+			           `
+			          }else{
+			          	  str+=`  
+			           <button class="odiv  bian" _id='${res[i]._id}' >√</button>
+			           `
+			          }
+			          }
+			    	$("#box").html(str)
+			    }
+			});
+
+		}
+		$("#box").on("click",".odiv",function(){
+//			console.log(12323)
+			var id=$(this).attr("_id")
+			console.log(id)
+			$.ajax({
+				type:"get",
+				url:"http://localhost:8080/upd",
+				data:{id},
+				success(res){
+					getMsg()
+				}
+				
+			});
+		})
+		function del(id){
+			$.ajax({
+				type:"get",
+				url:"http://localhost:8080/delete",
+				data:{id:id},
+				success(res){
+					getMsg()
+				}
+			})
+		}
+	</script>
+</html>
